@@ -1,0 +1,5 @@
+Doctor,1,Dr. Nguyen,0987654321,Cardiology,Monday 9am-5pm
+Doctor,2,Dr. Le,0123456789,Neurology,Tuesday 9am-5pm
+Patient,123456789,Nguyen Thi Lan,0981234567
+Patient,987654321,Tran Minh Tuan,0912345678
+Patient,123123123,Pham Thi Mai,0909876543

@@ -1,0 +1,48 @@
+CCCD:102230377
+Ho va Ten:Tran Ngoc tien
+Gioi tinh:Nam
+Tuoi:18
+Que quan:Hue
+Noi o hien tai:Da Nang
+SDT:0935572707
+Benh:Dep trai
+Ngay kham:8-11-2024
+Phong:F101
+Ca:01
+
+CCCD:102230344
+Ho va Ten:Nguyen Hoang Huy
+Gioi tinh:Nam
+Tuoi:18
+Que quan:Hue
+Noi o hien tai:Da Nang
+SDT:09356121472
+Benh:Dao
+Ngay kham:15-11-2024
+Phong:F101
+Ca:02
+
+
+CCCD:101230282
+Ho va Ten:Nguyen Van Minh Duy
+Gioi tinh:Nam
+Tuoi:18
+Que quan:Hue
+Noi o hien tai:Da Nang
+SDT:09454554545
+Benh:ngheo 
+Ngay kham:15-11-2024
+Phong:F101
+Ca:01
+
+CCCD:102230375
+Ho va Ten:Tran Quang Thinh
+Gioi tinh:Nam
+Tuoi:18
+Que quan:Hue
+Noi o hien tai:Da Nang
+SDT:0935614545454545
+Benh:Ga
+Ngay kham:9-11-2024
+Phong:F103
+Ca:01
