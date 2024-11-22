@@ -2,10 +2,17 @@
 #include <fstream>
 #include <SFML/Graphics.hpp>
 #include"libary/Textbox.h"
-#include"libary/Date.h"
+#include "libary/LinkedList.h"
+#include "LinkedList.cpp"
+#include "libary/Patient.h"
+#include "libary/Doctor.h"
+#include "libary/Clinic.h"
+#include "libary/Date.h"
+#include "ManagementSystem.h"
 #include<math.h>
 #include<cmath>
 #include<iostream>
+
 
 using namespace sf;
 using namespace std;
@@ -44,41 +51,203 @@ bool first = true;
 int showErrorPopup = 0;
 bool sign=false;
 
-string checkid(const string& searchSBD) {
+ void searchAndDisplayPatient(const string& cccd, LinkedList<Patient>& patientList) {
+	RenderWindow window(VideoMode(500, 400), "INFORMATION");
+
+    Font font;
+    font.loadFromFile("arial.ttf");
+
+    Text title("Thong tin benh nhan", font, 24);
+    title.setFillColor(Color(255, 182, 193)); 
+    title.setStyle(Text::Bold);
+    title.setPosition(80, 20);
+	
+    Node<Patient>* patientNode = patientList.find(&Patient::compareByCCCD,cccd);
+
+	while (window.isOpen()) {
+        Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == Event::Closed)
+                window.close();
+        }
+	window.clear(Color(173, 216, 230));
+    if (patientNode != nullptr) {
+        patientNode->data.displayinfor(patientNode->data);
+    } else {
+	Text Text("Khong tim thay benh nhan voi CCCD: " + cccd ,font, 16);
+    Text.setFillColor(Color(255, 182, 193)); 
+    Text.setStyle(Text::Bold);
+    Text.setPosition(0,100);
+	window.draw(Text);
+	}
+        window.draw(title);
+        window.display();
+    }
+ }
+ string checkid(const string& searchSBD) {
     ifstream inFile("ID.txt");
-	ifstream in("Doctor.txt");
-   	string line;
-    string result = "Could not found CCCD/Ma: " + searchSBD;
-    bool idFound = false;
+    ifstream in("Doctor.txt");
+    string line;
+    string result = "Could not find CCCD/Ma: " + searchSBD;
     string patientInfo;
+    bool idFound = false;
+
+    // Kiểm tra trong file ID.txt
     if (inFile.is_open()) {
+        bool foundInID = false;
         while (getline(inFile, line)) {
-            if (line.find("CCCD:") == 0 && line.substr(5) == searchSBD) {
-                idFound = true;
-                patientInfo += line + "\n";  
-            }
-            else if (idFound) {
-                if (line.empty()) break; 
-				patientInfo += line + "\n";
-            }
-        }
-	}
-    inFile.close();
-	if(in.is_open()){
-		 while (getline(in, line)) {
-            if (line.find("Ma:") == 0 && line.substr(3) == searchSBD) {
-                idFound = true;
-                patientInfo += line + "\n";  
-            }
-            else if (idFound) {
-                if (line.empty()) break; 
-				patientInfo += line + "\n";
+            if (line.find("CCCD:") == 0 && line.substr(5) == searchSBD && line.substr(5).length() == searchSBD.length()) {
+                foundInID = true;
+                patientInfo += line + "\n";
+            } else if (foundInID) {
+                if (line.empty()) break;
+                patientInfo += line + "\n";
             }
         }
-	}
-		in.close();
+        inFile.close();
+        if (foundInID) idFound = true;
+    }
+
+    // Kiểm tra trong file Doctor.txt
+    if (in.is_open()) {
+        bool foundInDoctor = false;
+        while (getline(in, line)) {
+            if (line.find("Ma:") == 0 && line.substr(3) == searchSBD && line.substr(3).length() == searchSBD.length()) {
+                foundInDoctor = true;
+                patientInfo += line + "\n";
+            } else if (foundInDoctor) {
+                if (line.empty()) break;
+                patientInfo += line + "\n";
+            }
+        }
+        in.close();
+        if (foundInDoctor) idFound = true;
+    }
+
     return idFound ? patientInfo : result;
 }
+
+void add()
+{
+     RenderWindow window(VideoMode(800, 600), "Chon doi tuong muon them");
+
+    Texture hovaten, cccd, ma, phongkham, cakham, sdt, gmail, benh, chuyennganh, ngaykham, tuoi, quequan, noiohientai, gioitinh;
+    Sprite sprHovaten, sprCCCD, sprMa, sprPhongkham, sprCakham, sprSDT, sprGmail, sprBenh, sprChuyennganh, sprNgaykham, sprTuoi, sprQuequan, sprNoiohientai, sprGioitinh;
+
+    hovaten.loadFromFile("D:image/Hovaten.png");
+    cccd.loadFromFile("D:image/CCCD.png");
+    ma.loadFromFile("D:image/ma.png");
+    phongkham.loadFromFile("D:image/phong.png");
+    cakham.loadFromFile("D:image/cakham.png");
+    sdt.loadFromFile("D:image/sdt.png");
+    gmail.loadFromFile("D:image/gmail.png");
+    benh.loadFromFile("D:image/benh.png");
+    chuyennganh.loadFromFile("D:image/chuyennganh.png");
+    ngaykham.loadFromFile("D:image/ngaykham.png");
+    tuoi.loadFromFile("D:image/tuoi.png");
+    quequan.loadFromFile("D:image/quequan.png");
+    noiohientai.loadFromFile("D:image/noiohientai.png");
+    gioitinh.loadFromFile("D:image/gioitinh.png");
+
+    sprHovaten.setTexture(hovaten);
+    sprCCCD.setTexture(cccd);
+    sprMa.setTexture(ma);
+    sprPhongkham.setTexture(phongkham);
+    sprCakham.setTexture(cakham);
+    sprSDT.setTexture(sdt);
+    sprGmail.setTexture(gmail);
+    sprBenh.setTexture(benh);
+    sprChuyennganh.setTexture(chuyennganh);
+    sprNgaykham.setTexture(ngaykham);
+    sprTuoi.setTexture(tuoi);
+    sprQuequan.setTexture(quequan);
+    sprNoiohientai.setTexture(noiohientai);
+    sprGioitinh.setTexture(gioitinh);
+	
+	Font arial;
+	arial.loadFromFile("arial.ttf");
+
+    sprHovaten.setPosition(50, 50);
+    sprCCCD.setPosition(50, 150);
+    sprMa.setPosition(50, 250);
+    sprPhongkham.setPosition(50, 350);
+    sprCakham.setPosition(50, 450);
+    sprSDT.setPosition(50, 550);
+    sprGmail.setPosition(50, 650);
+    sprBenh.setPosition(50, 750);
+    sprChuyennganh.setPosition(50, 850);
+
+	Text optionDoctor("Them Bac Si", arial, 30);
+    optionDoctor.setFillColor(Color::Black);
+    optionDoctor.setPosition(300, 200);
+
+    Text optionPatient("Them Benh Nhan", arial, 30);
+    optionPatient.setFillColor(Color::Black);
+    optionPatient.setPosition(300, 300);
+
+    Text message("", arial, 30);
+    message.setFillColor(Color::Red);
+    message.setPosition(300, 400);
+
+    // Tạo các vùng chọn
+    FloatRect doctorRect = optionDoctor.getGlobalBounds();
+    FloatRect patientRect = optionPatient.getGlobalBounds();
+
+    // Cờ trạng thái
+    bool isDoctor = false;
+    bool isPatient = false;
+
+    while (window.isOpen())
+    {
+        Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == Event::Closed)
+                window.close();
+
+            if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left)
+            {
+                Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+                if (doctorRect.contains(mousePos)) {
+                    isDoctor = true;
+                    isPatient = false;
+                    message.setString("Dang nhap thong tin Bac Si");
+                }
+                else if (patientRect.contains(mousePos)) {
+                    isPatient = true;
+                    isDoctor = false;
+                    message.setString("Dang nhap thong tin Benh Nhan");
+                }
+            }
+        }
+
+        window.clear(Color::White);
+
+        // Nếu chưa chọn, hiển thị các tùy chọn
+        if (!isDoctor && !isPatient) {
+            window.draw(optionDoctor);
+            window.draw(optionPatient);
+        }
+        else if (isDoctor) {
+            // Giao diện nhập thông tin bác sĩ
+            Text doctorInfo("Nhap thong tin Bac Si o day...", arial, 20);
+            doctorInfo.setFillColor(Color::Blue);
+            doctorInfo.setPosition(50, 500);
+            window.draw(doctorInfo);
+        }
+        else if (isPatient) {
+            // Giao diện nhập thông tin bệnh nhân
+            Text patientInfo("Nhap thong tin Benh Nhan o day...", arial, 20);
+            patientInfo.setFillColor(Color::Green);
+            patientInfo.setPosition(50, 500);
+            window.draw(patientInfo);
+        }
+
+        window.draw(message);
+        window.display();
+    }
+}
+
 void phongkham (bool roomStatus[5][4],string *b)
 {		
 	RenderWindow window (VideoMode(710,800),"Phong kham" );
@@ -88,7 +257,7 @@ void phongkham (bool roomStatus[5][4],string *b)
 	Texture cakham;
 	Texture ca;
 	Texture back;
-	Texture plush,minor;
+	
 
 	back.loadFromFile("D:image/back.png");
 	ca.loadFromFile("D:image/ca.png");
@@ -96,8 +265,7 @@ void phongkham (bool roomStatus[5][4],string *b)
 	background.loadFromFile("D:image/clinic2.jpg");
 	giuong.loadFromFile("D:image/giuong.png");
 	square.loadFromFile("D:image/square.png");
-	plush.loadFromFile("D:image/plush.png");
-	minor.loadFromFile("D:image/minor.png");
+	
 
 	Sprite Square(square);
 	Sprite Giuong(giuong);
@@ -105,8 +273,7 @@ void phongkham (bool roomStatus[5][4],string *b)
 	Sprite Cakham(cakham);
 	Sprite Ca(ca);
 	Sprite Back(back);
-	Sprite cong(plush);
-	Sprite tru(minor);
+	
 
 	Font arial;
 	arial.loadFromFile("arial.ttf");
@@ -176,6 +343,9 @@ void phongkham (bool roomStatus[5][4],string *b)
 								string info =checkid(id);
 								 PatientInfo(info);
 								}
+								else{
+											add();
+								}
 						}
 						if (x >=291 && 	x<=	419 && y>=	336 && y<=	464)
 						{
@@ -186,6 +356,9 @@ void phongkham (bool roomStatus[5][4],string *b)
 								string info =checkid(id);
 								 PatientInfo(info);
 								}
+								else{
+											add();
+								}
 						}
 						if (x >=291 && 	x<=	419 && y>=	464 && y<=	592)
 						{
@@ -195,6 +368,9 @@ void phongkham (bool roomStatus[5][4],string *b)
 								{	
 								string info =checkid(id);
 								 PatientInfo(info);
+								}
+								else{
+											add();
 								}
 						}
 
@@ -308,15 +484,47 @@ void phongkham (bool roomStatus[5][4],string *b)
 			}
 	Back.setPosition(15,672);
 	window.draw(Back);
-	cong.setPosition(250,672);
-	window.draw(cong);
-	tru.setPosition(450,672);
-	window.draw(tru);
+
 	}
 	window.display();
 			}	
 }
+void PatientInfo(const string& info) {
+    RenderWindow window(VideoMode(500, 400), "INFORMATION");
 
+    Font font;
+    font.loadFromFile("arial.ttf");
+	string h;
+	if(info[0]=='C')
+	{
+		h="Thong tin Benh Nhan";
+	}
+	else if (info[0]=='M')
+	{
+		h="Thong tin Bac si";
+	}
+	Text title(h, font, 24);
+    title.setFillColor(Color(0, 102, 204)); 
+    title.setStyle(Text::Bold);
+    title.setPosition(20, 20);
+  
+    Text text(info, font, 20);
+    text.setFillColor(Color::Black);
+    text.setPosition(20, 70);
+
+    while (window.isOpen()) {
+        Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == Event::Closed)
+                window.close();
+        }
+
+        window.clear(Color(135, 206, 250));
+        window.draw(title);
+        window.draw(text);
+        window.display();
+    }
+}
 string* checkAvailability(const string& date, bool roomStatus[5][4]) {
     ifstream file("clinic.txt");
     string fileDate;
@@ -387,159 +595,57 @@ void quydinh(const string& filename)
         window.display();
     }
 }
-void PatientInfo(const string& info) {
-    RenderWindow window(VideoMode(500, 400), "INFORMATION");
-
-    Font font;
-    font.loadFromFile("arial.ttf");
-	string h;
-	if(info[0]=='C')
-	{
-		h="Thong tin Benh Nhan";
-	}
-	else if (info[0]=='M')
-	{
-		h="Thong tin Bac si";
-	}
-	Text title(h, font, 24);
-    title.setFillColor(Color(0, 102, 204)); 
-    title.setStyle(Text::Bold);
-    title.setPosition(20, 20);
-  
-    Text text(info, font, 20);
-    text.setFillColor(Color::Black);
-    text.setPosition(20, 70);
-
-    while (window.isOpen()) {
-        Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == Event::Closed)
-                window.close();
-        }
-
-        window.clear(Color::White);
-        window.draw(title);
-        window.draw(text);
-        window.display();
-    }
-}
 void display(const string& filename) {
-	ifstream file(filename);
-    RenderWindow window(VideoMode(800, 600), "INFORMATION");
+	RenderWindow window(VideoMode(800, 600), "INFORMATION");
 
     Font font;
     font.loadFromFile("arial.ttf");
 
-    map<string, vector<pair<string, string>>> idData;
-    string line;
-    string currentID;
+	RectangleShape back(Vector2f(700, 500));
+    back.setFillColor(Color(255, 218, 185));
+    back.setOutlineColor(Color(128, 0, 128));
+    back.setOutlineThickness(2);
+	back.setPosition(50,50);
 
+	ifstream file(filename);
+	string line;
+    string currentID[100];
+	int i=0;
     while (getline(file, line)) {
         size_t pos = line.find(':');
         if (pos != string::npos) {
             string firstPart = line.substr(0, pos);
             string secondPart = line.substr(pos + 1);
-            if (firstPart == "CCCD"|| firstPart =="Ma") {
-                currentID = secondPart;
-            } else if(firstPart == "Ho va Ten") {
-                idData[currentID].emplace_back(firstPart, secondPart);
+            	if (firstPart == "CCCD"|| firstPart =="Ma") {
+					currentID[i]+=secondPart;
+            }
+			 else if(firstPart == "Ho va Ten") {
+					currentID[i++]=secondPart;
             }
         }
     }
     file.close();
+	Text tieude;
+	tieude.setFont(font); 
+	tieude.setCharacterSize(34); 
+	tieude.setFillColor(Color(128, 0, 128)); 
+	tieude.setStyle(Text::Bold); 
+	tieude.setPosition(80, 20);
 
-    float itemHeight = 30;
-    float scrollOffset = 0;
-    float maxScroll = window.getSize().y;
-    
-    int startX = 50;
-    int startY = 100;
-    int colWidth = 350;
-    int rowHeight = 30;
+if (filename == "ID.txt") {
+    tieude.setString("Danh sach benh nhan"); 
+} else {
+    tieude.setString("Danh sach bac si"); }
 
-    RectangleShape scrollbar(Vector2f(10, 100));
-    scrollbar.setFillColor(Color::Black);
-    scrollbar.setPosition(window.getSize().x - 20, 100);
+	RectangleShape button[1000];
+	for (int j=0;j<i;j++)
+	{
+		button[j].setSize(Vector2f(600,50));
+		button[j].setFillColor(Color(139, 69, 19));
+		button[j].setOutlineColor(Color(128, 0, 128));
+		button[j].setOutlineThickness(3);
+	}
 
-    auto it = idData.begin();  // Duyệt qua từng ID
-
-    while (window.isOpen()) {
-        Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == Event::Closed)
-                window.close();
-            else if (event.type == Event::KeyPressed) {
-                if (event.key.code == Keyboard::Right) {
-                    if (++it == idData.end()) it = idData.begin();  
-                    scrollOffset = 0;  
-                } else if (event.key.code == Keyboard::Left) {
-                    if (it == idData.begin()) it = idData.end();
-                    --it;  
-                    scrollOffset = 0;  
-                }
-            } else if (event.type == Event::MouseWheelScrolled) {
-                scrollOffset -= event.mouseWheelScroll.delta * 15;
-                if (scrollOffset < 0) scrollOffset = 0;
-                if (scrollOffset > maxScroll) scrollOffset = maxScroll;
-
-                float scrollbarHeight = (window.getSize().y / float(it->second.size() * rowHeight)) * window.getSize().y;
-                scrollbar.setSize(Vector2f(10, scrollbarHeight));
-                scrollbar.setPosition(window.getSize().x - 20, 100 + (scrollOffset / maxScroll) * (window.getSize().y - scrollbarHeight));
-            }
-        }
-
-        window.clear(Color::White);
-
-        if(filename=="ID.txt"){
-        Text tieude("Thong tin benh nhan: " + it->first, font, 34);
-        tieude.setFillColor(Color::Green);
-        tieude.setStyle(Text::Bold);
-        tieude.setPosition(80, 20);
-        window.draw(tieude);
-		}
-		else{
-		Text tieude("Thong tin bac si: " + it->first, font, 34);
-        tieude.setFillColor(Color::Green);
-        tieude.setStyle(Text::Bold);
-        tieude.setPosition(80, 20);
-        window.draw(tieude);
-		}
-
-        // Hiển thị bảng dữ liệu cho ID hiện tại
-        int visibleRows = window.getSize().y / rowHeight;
-        int startIndex = scrollOffset / itemHeight;
-
-        for (size_t i = startIndex; i < it->second.size() && static_cast<int>(i) < startIndex + visibleRows; ++i) {
-            float yPos = startY + (i - startIndex) * rowHeight;
-
-            Text firstColumnText(it->second[i].first, font, 20);
-            firstColumnText.setFillColor(Color::Black);
-            firstColumnText.setPosition(startX + 50, yPos);
-            window.draw(firstColumnText);
-
-            Text secondColumnText(it->second[i].second, font, 20);
-            secondColumnText.setFillColor(Color::Black);
-            secondColumnText.setPosition(startX + colWidth - 50, yPos);
-            window.draw(secondColumnText);
-
-            RectangleShape firstBox(Vector2f(colWidth - 100, rowHeight));
-            firstBox.setPosition(startX, yPos);
-            firstBox.setFillColor(Color::Transparent);
-            firstBox.setOutlineColor(Color::Black);
-            firstBox.setOutlineThickness(1);
-            window.draw(firstBox);
-
-            RectangleShape secondBox(Vector2f(colWidth + 100, rowHeight));
-            secondBox.setPosition(startX + colWidth - 100, yPos);
-            secondBox.setFillColor(Color::Transparent);
-            secondBox.setOutlineColor(Color::Black);
-            secondBox.setOutlineThickness(1);
-            window.draw(secondBox);
-        }
-
-        window.draw(scrollbar);
-        window.display();
-    }
 }
 void input() {
     ifstream fin("login.txt", ios::in);
@@ -554,14 +660,15 @@ void input() {
     }
     fin.close();
 }
-void excute()
+void excute(LinkedList<Patient>& patientList,LinkedList<Doctor>& doctorList,LinkedList<Clinic>& clinicList)
 {
-	RenderWindow window(VideoMode(710, 800), "Dental Management ");
+RenderWindow window(VideoMode(710, 800), "Dental Management ");
 	Texture t1, t2, t3, t4, t5, t6, t7, t8, t9;
 	Texture errorBoxTexture;
 	Texture Background1,Background2;
 	Texture clinic;
 	Texture glass;
+	Texture plush,minor;
 
 	glass.loadFromFile("D:image/glass.png");
 	Background1.loadFromFile("D:image/background.jpg");
@@ -575,6 +682,8 @@ void excute()
 	errorBoxTexture.loadFromFile("D:image/errorbox.png"); 
 	clinic.loadFromFile("D:image/clinic.jpg");
 	Background2.loadFromFile("D:image/background2.jpg");
+	plush.loadFromFile("D:image/plush.png");
+	minor.loadFromFile("D:image/minor.png");
 
 	Sprite login(t1);
 	Sprite registerr(t2);
@@ -588,6 +697,8 @@ void excute()
 	Sprite guong(glass);
 	Sprite Clinic(clinic);
 	Sprite background2(Background2);
+	Sprite cong(plush);
+	Sprite tru(minor);
 	
 
 	Font arial;
@@ -849,6 +960,13 @@ void excute()
 									{
 										quydinh("quydinh.txt");
 									}
+									//cong
+									if (x >= 200 && x <= 328 && y >= 672 && y <= 800) {
+										add();
+									}
+									if (x >= 15 && x <= 143 && y >= 672 && y <= 800) {
+										scene = 1;
+									}
 				}
 				}
 			}
@@ -999,8 +1117,13 @@ void excute()
 			window.draw(Name);
 			Back.setPosition(15,672);
 			window.draw(Back);
+			cong.setPosition(200,672);
+			window.draw(cong);
+			tru.setPosition(400,672);
+			window.draw(tru);
 			box.setPosition(100, 250);
 			window.draw(box);
+			
 			text1.setPosition(box.getPosition().x + 60, box.getPosition().y + 35);
 			window.draw(text1);
 			box.setPosition(450, 250);
@@ -1017,6 +1140,7 @@ void excute()
 			window.draw(text5);
 			find.setPosition({275,120});
 			find.drawTo(window);
+			
 		}
 		if (showErrorPopup == 1) {
     window.draw(errorBox);
@@ -1054,7 +1178,15 @@ void excute()
 	}
 }
 int main()
-{
-	excute();
+{	
+LinkedList<Patient> patientList; 
+// patientList.loadFromFile("ID.txt", Patient::load);
+LinkedList<Doctor> doctorList;
+//  doctorList.loadFromFile("Doctor.txt", Doctor::load);
+
+LinkedList<Clinic> clinicList;
+//  clinicList.loadFromFile("Clinic.txt", Clinic::load);
+
+	excute( patientList,doctorList,clinicList);
 	return 0;
 }	
