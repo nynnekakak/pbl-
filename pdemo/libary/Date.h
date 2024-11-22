@@ -14,7 +14,10 @@ public:
     int Day, Month, Year;
 
     Date(int day = 1, int month = 1, int year = 2024) : Day(day), Month(month), Year(year) {}
-
+    
+    void in(){
+        cout << "test thu";
+    }
     bool isLeapYear(int year) {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     }
